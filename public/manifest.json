@@ -1,0 +1,22 @@
+{
+  "name": "名刺管理 | 商品開発部",
+  "short_name": "名刺管理",
+  "description": "商品開発部の名刺管理アプリ",
+  "start_url": "/cards",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+'use client'
+
+import Image from 'next/image'
+import type { ParsedCardData } from '@/lib/supabase/types'
+
+interface Props {
+  imageUrl: string
+  parsed: ParsedCardData
+  onChange: (data: ParsedCardData) => void
+}
+
+const FIELDS: { key: keyof ParsedCardData; label: string; type?: string }[] = [
+  { key: 'full_name', label: '氏名' },
+  { key: 'name_reading', label: 'ふりがな' },
+  { key: 'company_name', label: '会社名' },
+  { key: 'department', label: '部署' },
+  { key: 'title', label: '役職' },
+  { key: 'email', label: 'メール', type: 'email' },
+  { key: 'phone', label: '電話（代表）', type: 'tel' },
+  { key: 'mobile', label: '携帯', type: 'tel' },
+  { key: 'postal_code', label: '郵便番号' },
+  { key: 'address', label: '住所' },
+  { key: 'website', label: 'ウェブサイト', type: 'url' },
+]
+
+export function OcrResultEditor({ imageUrl, parsed, onChange }: Props) {
+  function handleChange(key: keyof ParsedCardData, value: string) {
+    onChange({ ...parsed, [key]: value || undefined })
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* 名刺画像プレビュー */}
+      <div className="flex flex-col gap-2">
+        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">名刺画像</p>
+        <div className="relative w-full aspect-[1.77/1] rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+          <Image src={imageUrl} alt="名刺" fill className="object-contain" />
+        </div>
+        <p className="text-xs text-gray-400 text-center">画像を見ながら右側の情報を修正してください</p>
+      </div>
+
+      {/* OCR結果フォーム */}
+      <div className="space-y-3">
+        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">OCR読取結果（修正可）</p>
+        {FIELDS.map(({ key, label, type }) => (
+          <div key={key}>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+            <input
+              type={type || 'text'}
+              value={parsed[key] || ''}
+              onChange={(e) => handleChange(key, e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              placeholder={`${label}を入力`}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

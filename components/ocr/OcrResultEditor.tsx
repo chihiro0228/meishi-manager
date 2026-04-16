@@ -7,6 +7,8 @@ interface Props {
   imageUrl: string
   parsed: ParsedCardData
   onChange: (data: ParsedCardData) => void
+  rawText?: string
+  engine?: string
 }
 
 const FIELDS: { key: keyof ParsedCardData; label: string; type?: string }[] = [
@@ -23,7 +25,7 @@ const FIELDS: { key: keyof ParsedCardData; label: string; type?: string }[] = [
   { key: 'website', label: 'ウェブサイト', type: 'url' },
 ]
 
-export function OcrResultEditor({ imageUrl, parsed, onChange }: Props) {
+export function OcrResultEditor({ imageUrl, parsed, onChange, rawText, engine }: Props) {
   function handleChange(key: keyof ParsedCardData, value: string) {
     onChange({ ...parsed, [key]: value || undefined })
   }
@@ -37,6 +39,17 @@ export function OcrResultEditor({ imageUrl, parsed, onChange }: Props) {
           <Image src={imageUrl} alt="名刺" fill className="object-contain" />
         </div>
         <p className="text-xs text-gray-400 text-center">画像を見ながら右側の情報を修正してください</p>
+        {/* OCR生テキスト（デバッグ用） */}
+        {rawText && (
+          <details className="mt-2">
+            <summary className="text-xs text-gray-400 cursor-pointer hover:text-gray-600 select-none">
+              OCR生テキストを表示 {engine && <span className="ml-1 px-1 py-0.5 rounded bg-gray-100 font-mono">{engine}</span>}
+            </summary>
+            <pre className="mt-1 text-xs text-gray-500 bg-gray-50 rounded p-2 whitespace-pre-wrap break-all border border-gray-100 max-h-40 overflow-y-auto">
+              {rawText}
+            </pre>
+          </details>
+        )}
       </div>
 
       {/* OCR結果フォーム */}

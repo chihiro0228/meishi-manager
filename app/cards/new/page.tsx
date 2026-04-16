@@ -16,6 +16,7 @@ export default function NewCardPage() {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [ocrRawText, setOcrRawText] = useState('')
+  const [ocrEngine, setOcrEngine] = useState('')
   const [parsed, setParsed] = useState<ParsedCardData>({})
   const [notes, setNotes] = useState('')
   const [metAt, setMetAt] = useState('')
@@ -41,6 +42,7 @@ export default function NewCardPage() {
         setParsed({})
       } else {
         setOcrRawText(data.rawText || '')
+        setOcrEngine(data.engine || '')
         setParsed(data.parsed || {})
       }
     } catch {
@@ -130,6 +132,8 @@ export default function NewCardPage() {
                 imageUrl={imagePreview}
                 parsed={parsed}
                 onChange={setParsed}
+                rawText={ocrRawText}
+                engine={ocrEngine}
               />
             </div>
 

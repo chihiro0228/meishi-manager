@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseCardText } from '@/lib/ocr/parse-card'
+import { parseCardTextWithLLM } from '@/lib/ocr/parse-card-llm'
 
 export async function POST(request: NextRequest) {
   const apiKey = process.env.GOOGLE_CLOUD_API_KEY
@@ -54,9 +55,22 @@ export async function POST(request: NextRequest) {
     const rawText: string =
       visionData.responses?.[0]?.fullTextAnnotation?.text || ''
 
-    const parsed = parseCardText(rawText)
+    // LLMパーサーを優先使用、失敗時は正規表現ベースにフォールバック
+    let parsed: ReturnType<typeof parseCardText>
+    let engine = 'regex'
+    if (process.env.ANTHROPIC_API_KEY) {
+      try {
+        parsed = await parseCardTextWithLLM(rawText)
+        engine = 'llm'
+      } catch (llmErr) {
+        console.warn('LLM parse failed, falling back to regex:', llmErr)
+        parsed = parseCardText(rawText)
+      }
+    } else {
+      parsed = parseCardText(rawText)
+    }
 
-    return NextResponse.json({ rawText, parsed })
+    return NextResponse.json({ rawText, parsed, engine })
   } catch (err) {
     console.error('OCR route error:', err)
     return NextResponse.json({ error: 'サーバーエラーが発生しました' }, { status: 500 })

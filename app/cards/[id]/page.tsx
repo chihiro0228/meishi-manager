@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { DeleteButton } from './DeleteButton'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -124,6 +125,9 @@ export default async function CardDetailPage({ params }: PageProps) {
 
         {/* アーカイブボタン */}
         <ArchiveButton cardId={card.id} currentStatus={card.status} />
+
+        {/* 削除ボタン */}
+        <DeleteButton cardId={card.id} />
       </div>
     </div>
   )

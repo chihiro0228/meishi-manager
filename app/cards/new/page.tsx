@@ -20,7 +20,7 @@ export default function NewCardPage() {
   const [ocrEngineError, setOcrEngineError] = useState('')
   const [parsed, setParsed] = useState<ParsedCardData>({})
   const [notes, setNotes] = useState('')
-  const [metAt, setMetAt] = useState('')
+  const [metAt, setMetAt] = useState(new Date().toISOString().slice(0, 10))
   const [metContext, setMetContext] = useState('')
   const [error, setError] = useState('')
   const [ocrLoading, setOcrLoading] = useState(false)

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { parseCardText } from '@/lib/ocr/parse-card'
 import { parseCardTextWithLLM } from '@/lib/ocr/parse-card-llm'
 
+export const runtime = 'nodejs'
+
 export async function POST(request: NextRequest) {
   const apiKey = process.env.GOOGLE_CLOUD_API_KEY
   if (!apiKey) {
@@ -58,19 +60,22 @@ export async function POST(request: NextRequest) {
     // LLMパーサーを優先使用、失敗時は正規表現ベースにフォールバック
     let parsed: ReturnType<typeof parseCardText>
     let engine = 'regex'
+    let engineError: string | undefined
     if (process.env.ANTHROPIC_API_KEY) {
       try {
         parsed = await parseCardTextWithLLM(rawText)
         engine = 'llm'
       } catch (llmErr) {
+        engineError = String(llmErr)
         console.warn('LLM parse failed, falling back to regex:', llmErr)
         parsed = parseCardText(rawText)
       }
     } else {
+      engineError = 'ANTHROPIC_API_KEY not set'
       parsed = parseCardText(rawText)
     }
 
-    return NextResponse.json({ rawText, parsed, engine })
+    return NextResponse.json({ rawText, parsed, engine, engineError })
   } catch (err) {
     console.error('OCR route error:', err)
     return NextResponse.json({ error: 'サーバーエラーが発生しました' }, { status: 500 })

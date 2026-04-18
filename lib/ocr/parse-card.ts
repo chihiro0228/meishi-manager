@@ -97,12 +97,18 @@ export function parseCardText(rawText: string): ParsedCardData {
   }
 
   // --- 氏名（残った短い行から推定）---
-  // 日本語氏名: 漢字・ひらがな・カタカナのみで2〜8文字
+  // 日本語氏名: 漢字・ひらがな・カタカナのみで2〜8文字（姓名間スペース許容）
   // 英語氏名: 大文字始まりの単語が2〜4個
-  const namePatternJP = /^[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]{2,8}$/
+  const jpChar = '[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]'
+  const namePatternJP = new RegExp(
+    `^${jpChar}{1,5}[\\s\u3000]?${jpChar}{1,5}$`
+  )
   const namePatternEN = /^[A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3}$/
+  // 役職・部署キーワードを含む行は氏名候補から除外
+  const excludeFromName = /部|課|室|グループ|チーム|長|主任|担当|代表|社長|会長|専務|常務|取締役|マネージャー|Manager|Director|Officer|Executive|Leader|Division|Department/
   for (const line of lines) {
     if (usedLines.has(line)) continue
+    if (excludeFromName.test(line)) continue
     if (namePatternJP.test(line) || namePatternEN.test(line)) {
       result.full_name = line
       usedLines.add(line)

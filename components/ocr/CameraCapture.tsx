@@ -26,8 +26,8 @@ export function CameraCapture({ onCapture, disabled }: Props) {
       }
     }
 
-    // canvasでリサイズ（1200px以下・JPEG85%）
-    const resizedFile = await resizeImage(processedFile, 1200, 0.85)
+    // 名刺比率（91:55）に白背景でレターボックス化してリサイズ
+    const resizedFile = await resizeToCardRatio(processedFile, 1200, 0.88)
     const previewUrl = URL.createObjectURL(resizedFile)
     onCapture(resizedFile, previewUrl)
 
@@ -71,22 +71,48 @@ export function CameraCapture({ onCapture, disabled }: Props) {
   )
 }
 
-async function resizeImage(file: File, maxWidth: number, quality: number): Promise<File> {
+// 名刺標準比率 91mm:55mm
+const CARD_RATIO = 91 / 55
+
+/**
+ * 名刺比率（91:55）に白背景でレターボックス化してリサイズする。
+ * 画像の内容を切り抜かず、全体を収めるように余白を追加する。
+ */
+async function resizeToCardRatio(file: File, maxWidth: number, quality: number): Promise<File> {
   return new Promise((resolve) => {
-    const img = new Image()
+    const img = new window.Image()
     const url = URL.createObjectURL(file)
     img.onload = () => {
       URL.revokeObjectURL(url)
-      let { width, height } = img
-      if (width > maxWidth) {
-        height = Math.round((height * maxWidth) / width)
-        width = maxWidth
+
+      // 出力サイズを名刺比率で確定
+      const srcRatio = img.width / img.height
+      let outW: number, outH: number
+      if (srcRatio > CARD_RATIO) {
+        // 元画像が横長すぎる → 幅に合わせて高さを名刺比率に拡張
+        outW = Math.min(img.width, maxWidth)
+        outH = Math.round(outW / CARD_RATIO)
+      } else {
+        // 元画像が縦長 or ほぼ同比率 → 高さから幅を名刺比率で計算
+        outH = Math.round(Math.min(img.width, maxWidth) / CARD_RATIO)
+        outW = Math.round(outH * CARD_RATIO)
       }
+
+      // 元画像をoutWに収まるようスケール
+      const scale = Math.min(outW / img.width, outH / img.height)
+      const drawW = Math.round(img.width * scale)
+      const drawH = Math.round(img.height * scale)
+      const offsetX = Math.round((outW - drawW) / 2)
+      const offsetY = Math.round((outH - drawH) / 2)
+
       const canvas = document.createElement('canvas')
-      canvas.width = width
-      canvas.height = height
+      canvas.width = outW
+      canvas.height = outH
       const ctx = canvas.getContext('2d')!
-      ctx.drawImage(img, 0, 0, width, height)
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, outW, outH)
+      ctx.drawImage(img, offsetX, offsetY, drawW, drawH)
+
       canvas.toBlob(
         (blob) => {
           if (!blob) { resolve(file); return }

@@ -47,7 +47,7 @@ export default async function CardDetailPage({ params }: PageProps) {
       <div className="max-w-lg mx-auto p-4 space-y-4 pb-20">
         {/* 名刺画像 */}
         {imageUrl && (
-          <div className="relative w-full aspect-[1.77/1] rounded-xl overflow-hidden border border-gray-200">
+          <div className="relative w-full aspect-[91/55] rounded-xl overflow-hidden border border-gray-200">
             <Image src={imageUrl} alt={card.full_name || '名刺'} fill className="object-contain bg-gray-50" />
           </div>
         )}

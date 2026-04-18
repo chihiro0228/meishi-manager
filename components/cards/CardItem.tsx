@@ -16,7 +16,7 @@ export function CardItem({ card, imageUrl }: Props) {
     <Link href={`/cards/${card.id}`}>
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md hover:border-blue-200 transition-all cursor-pointer">
         {/* 名刺画像またはイニシャル */}
-        <div className="relative w-full aspect-[1.77/1] bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="relative w-full aspect-[91/55] bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
           {imageUrl ? (
             <Image src={imageUrl} alt={card.full_name || '名刺'} fill className="object-cover" />
           ) : (

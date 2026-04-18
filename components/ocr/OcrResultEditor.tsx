@@ -36,7 +36,7 @@ export function OcrResultEditor({ imageUrl, parsed, onChange, rawText, engine, e
       {/* 名刺画像プレビュー */}
       <div className="flex flex-col gap-2">
         <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">名刺画像</p>
-        <div className="relative w-full aspect-[1.77/1] rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+        <div className="relative w-full aspect-[91/55] rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
           <Image src={imageUrl} alt="名刺" fill className="object-contain" />
         </div>
         <p className="text-xs text-gray-400 text-center">画像を見ながら右側の情報を修正してください</p>

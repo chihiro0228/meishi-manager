@@ -11,7 +11,7 @@ export async function parseCardTextWithLLM(rawText: string): Promise<ParsedCardD
   if (!rawText.trim()) return {}
 
   const message = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
+    model: 'claude-haiku-4-5',
     max_tokens: 512,
     system: `あなたは名刺情報の抽出専門AIです。
 OCRで読み取った名刺テキストから、各フィールドを正確に抽出してJSONで返してください。
